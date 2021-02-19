@@ -1,0 +1,218 @@
+---
+title: "DataViz MakeOver 02"
+description: |
+  DataViz MakeOver 02 of ISSS608 Visual Analytics and Applications
+author:
+  - name: Tang Haozheng
+    url: 
+date: 02-19-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+<font size=5>1. Critiques For The Original Visualization</font>
+  
+  The current visualization can be found at below picture. The purpose of this chart is to compare the attitude towards vaccine against Covid-19 between different countries. And for this purpose, there are sevral improvements.
+  
+  ![](Pictures/1.png)
+
+<font size=4>1.1 Clarity Issues</font>
+  
+  (1)For the left chart, the Y axis is sorted alphabetically and it is hard to find out that which country is actually the most pro-vaccine. Since the title of this chart is "Which country is more pro-vaccine?", at least we need to identify the most pro-vaccine country in this chart.
+
+  (2)For the left chart, the entire layout is hard to see the percentage of people of each country that take a supportive attitude, which is more than 3 in this chart, is higher than others. The reason is that the red parts (which indicates 3) of each bar is at different positions and it is hard to compare since the start point is different. To solve this issue, I will later use Gantt chart to fix it since Gantt chart allows all the neutral parts locate at the same position.
+  
+  (3)For the right chart, it is actually kind of redundant since if we design the left chart properly, viewers can easily find out which country that people from is more pro-vaccine. However, if we consist to keep the right chart, then at least the Y axis of it should be sorted by the same order of the left chart for consistency. This is to say, we should sort both charts alphabetically or by the percentage of strongly agree descendingly. In this case, it is more convenient for viewers to know the rankings and find out more information if they compare these two charts together.
+  
+  (4)Looking at the legend for the colour, the title is "Vac_1", this is not understandable for viewers since there is no any other information that clarify what the "Vac_1" refers to.
+  
+<font size=4>1.2 Aesthetics Issues</font>
+
+  (1)The colour of the left chart could be more contrasting especially for "Strongly disagree" and "Strongly agree". Besides Green is more associated with supportive attitudes.
+  
+  (2)The first letter of the country name should be capitalised to make it more formal and rigorous。
+  
+  (3)There is a typo in the title of the left chart. Need correct "pro-vacinne" to "pro-vaccine".
+  
+
+<font size=5>2. Proposed Design</font>
+
+  ![](Pictures/2.png)
+  
+  ![](Pictures/3.png)
+
+  Comparing to the original visualization, the proposed design overcome sevral issues:
+  
+  (1)More understandable for viewers to find out which country actually ranks higher than others, and it allows viewers to select which question they want to display instead of only one question. This is to enrich the information conveyed to viewers.
+  
+  (2)Gantt chart makes the neutral parts of each bar, which is with the value of 3, locate at the same position so that it is easier to compare both "Agree & Strongly agree" proportion and "Disagree & Strongly disagree" proportion.
+  
+  (3)The uncertainty chart displays the percentage of "Agree & Strongly agree" in total records, which is more straightforward for viewers and it provides the confidence interval of population proportion, which is more rational and rigorous by assuming that the samples are normal distributions.
+  
+  (4)The filters of the uncertainty chart allows viewers to select different questions and break down the data by "Age", "Gender", "Employment_Status", "Household_Size" and "Household_Children". It conveys more useful information and details to viewers.
+  
+<font size=5>3. Tableau Dashboard</font>
+
+  ![](Pictures/4.png)
+
+<font size=5>4. Step-by-step Description</font>
+
+  <font size=4>4.1 Data Preparation</font>
+  
+  Since we need to convert the data type of score into numerical datatype, we need to delete the characters in the score data, which means "1 - Strongly agree" need to be "1" and "5 - Strongly disagree" need to be "5". To do this, I replace these data in the data source. Alternatively, it is possible to create a calculation field in tableau that helps to replace the strings with numbers after importing the data. However, here I chose the less efficient way to do it.
+  
+  ![](Pictures/5.png)
+  
+  ![](Pictures/6.png)
+  
+  <font size=4>4.2 Importing data into Tableau</font>
+  
+  Here click on "New Union" below and then choose Wildcard(automatic) to import all the data we need as a union.
+  
+  ![](Pictures/7.png)
+  
+  Then need to hide the columns that won't be used further. Here, for questions, I only keep "Vac1", "Vac2_1", "Vac2_2", "Vac2_3", "Vac2_6", and "Vac3". For others, need to keep "Age", "Gender", "Employment_status", "household_size" and "household_children" for further use as breakdown parameters. Then pivot the questions kept and corresponding scores. At last, we input aliases for questions and path(we need to change it to country names).
+  
+  ![](Pictures/8.png)
+  
+  ![](Pictures/9.png)
+  
+  From the pictures above, we can see there are some extra columns created. Those will be explained later when we come to create calculation fields.
+  
+  <font size=4>4.3 Gantt chart</font>
+  
+  First we right click the "Score" and change it to dimension and change the data type to numbers(whole). Then we create the calculation fields we need to use for the chart.
+  
+  ![](Pictures/10.png)
+  
+  ![](Pictures/11.png)
+  
+  ![](Pictures/12.png)
+  
+  ![](Pictures/13.png)
+  
+  ![](Pictures/14.png)
+  
+  ![](Pictures/15.png)
+  
+  ![](Pictures/16.png)
+  
+  Then we drag the dimensions and measures to the position as shown in below picture.
+  
+  ![](Pictures/17.png)
+  
+  Notice that we need to change the "compute using" of "Gantt Percent" and "Percentage" to "Score". Also at the right colour filter panel, we need to exclude null value so it won't display.
+  
+  ![](Pictures/18.png)
+  
+  ![](Pictures/19.png)
+  
+  After this need to edit the format of axis to make it tidy and understandable. First we need to reverse the x axis since in this data source, 1 represents strongly agree and 5 represents strongly disagree. Then under the format panel, change the scale to percentage with 0 decimal.
+  
+  ![](Pictures/20.png)
+  
+  ![](Pictures/21.png)
+  
+  Then drag the "Questions" to filters panel and set as below:
+  
+  ![](Pictures/22.png)
+  
+  ![](Pictures/23.png)
+ 
+  At last, we input the title and notice we need to insert "Questions" so that our title will change according to the filter.
+  
+  ![](Pictures/25.png)
+  
+  Now the chart should look like as below and we have finished the gantt chart part.
+  
+  ![](Pictures/24.png)
+  
+  <font size=4>4.4 Uncertainty visualization</font> 
+  
+  First of all, we need to group the value of "Age", "Household_children" and "Household_size" to make them into intervals.
+  
+  ![](Pictures/26.png)
+  
+  ![](Pictures/27.png)
+  
+  ![](Pictures/28.png)
+  
+  Then we start to create below parameters and calculation fields for uncertainty.
+  
+  ![](Pictures/35.png)
+  
+  ![](Pictures/36.png)
+  
+  ![](Pictures/29.png)
+  
+  ![](Pictures/30.png)
+  
+  ![](Pictures/31.png)
+  
+  ![](Pictures/32.png)
+  
+  ![](Pictures/33.png)
+  
+  ![](Pictures/34.png)
+  
+  Then we need to drag the measures, dimensions and parameters to the position shown as below. Notice that once we drag the lower limit and upper limit to columns we need to right click Prop and choose dual axis. After that, we right click the upper x axis and choose synchronise axis.
+  
+  ![](Pictures/37.png)
+  
+  ![](Pictures/38.png)
+  
+  ![](Pictures/39.png)
+  
+  ![](Pictures/40.png)
+  
+  At last we input the title and also we need to insert the breakdown parameter and questions filter. 
+  
+  ![](Pictures/41.png)
+  
+  Then the final chart should look like as below:
+  
+  ![](Pictures/42.png)
+  
+  <font size=4>4.5 Dashboard design</font>
+  
+  First create a new dashboard and choose the size of automatic.
+  
+  ![](Pictures/43.png)
+  
+  Then we drag sheet 1 and sheet 2 to the blank area and adjust the layout to make it tidy and easily understandable. Especially we need to put the filters for gantt chart and uncertainty chart at different positions next to the corresponding chart to be clearer. Finally our dashboard should look like this.
+  
+  ![](Pictures/44.png)
+  
+<font size=5>5. Major Observations</font>
+
+  <font size=4>5.1 Observations from Gantt chart</font>
+  
+  (1)UK is the most pro-vaccine country under question: If a Covid-19 vaccine were made available to me this week I would definitely get it, according to the gantt chart. On the contrary, France is the most against-vaccine country under question 1.
+  
+  ![](Pictures/45.png)
+  
+  (2)Under question: I am worried about getting Covid-19, the top three most worried countries are Japan, South Korea and Singapore. We can see that all of them are Asian countries.
+  
+  ![](Pictures/46.png)
+  
+  (3)Interestingly, under question: I am worried about potential side effects of a Covid-19 vaccine, the top 3 countries are also Japan, Singapore and South Korea.
+  
+  ![](Pictures/47.png)
+  
+  <font size=4>5.2 Observations from uncertainty chart</font>
+  
+  (1)Under the question: I am worried about getting Covid-19, as the age group increases, the percentage of "Agree & Strongly agree" is also getting higher accordingly.
+  
+  ![](Pictures/48.png)
+  
+  (2)Under question: If a Covid-19 vaccine were made available to me this week I would definitely get it, the male is more willing to be vaccinated than the female.
+  
+  ![](Pictures/49.png)
+
+
